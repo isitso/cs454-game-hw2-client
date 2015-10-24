@@ -19,8 +19,16 @@ class ServerResponseTable:
         self.add(Constants.RAND_STRING, 'ResponseRandomString')
         self.add(Constants.RAND_SHORT, 'ResponseRandomShort')
         self.add(Constants.RAND_FLOAT, 'ResponseRandomFloat')
-        self.add(Constants.CMSG_AUTH, 'ResponseLogin')
-        self.add(Constants.CMSG_CREATE_CHARACTER,'ResponseCreateCharacter')
+        self.add(Constants.SMSG_AUTH, 'ResponseLogin')
+#        self.add(Constants.SMSG_DISCONNECT, 'ResponseLogout')
+#        self.add(Constants.SMSG_GO_TO_CHARACTER_SELECTION, 'ResponseGoToCharacterSelection')
+#        self.add(Constants.SMSG_SELECT_CHARACTER, 'ResponseSelectCharacter')
+#        self.add(Constants.SMSG_REGISTER, 'ResponseCreateAccount')
+#        self.add(Constants.SMSG_CREATE_CHARACTER,'ResponseCreateCharacter')
+#        self.add(Constants.SMSG_CHAT, 'ResponseChat')
+#        self.add(Constants.SMSG_CHAT, 'ResponseMove')
+#        self.add(Constants.SMSG_PLAYER_LOGOUT, 'ResponsePlayerLogout')
+#        self.add(Constants.SMSG_SPAWN, 'ResponseSpawn')
 
     def add(self, constant, name):
         """Map a numeric response code with the name of an existing response module."""

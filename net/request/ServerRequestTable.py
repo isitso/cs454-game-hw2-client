@@ -20,7 +20,14 @@ class ServerRequestTable:
         self.add(Constants.RAND_SHORT, 'RequestRandomShort')
         self.add(Constants.RAND_FLOAT, 'RequestRandomFloat')
         self.add(Constants.CMSG_AUTH, 'RequestLogin')
-        self.add(Constants.CMSG_CREATE_CHARACTER,'RequestCreateCharacter')
+#        self.add(Constants.CMSG_DISCONNECT, 'RequestLogout')
+#        self.add(Constants.CMSG_GO_TO_CHARACTER_SELECTION, 'RequestGoToCharacterSelection')
+#        self.add(Constants.CMSG_SELECT_CHARACTER, 'RequestSelectCharacter')
+#        self.add(Constants.CMSG_REGISTER, 'RequestCreateAccount')
+#        self.add(Constants.CMSG_CREATE_CHARACTER,'RequestCreateCharacter')
+#        self.add(Constants.CMSG_CHAT, 'RequestChat')
+#        self.add(Constants.CMSG_MOVE, 'RequestMove')
+#        self.add(Constants.CMSG_HEARTBEAT, 'RequestHeartbeat')
 
     def add(self, constant, name):
         """Map a numeric request code with the name of an existing request module."""
