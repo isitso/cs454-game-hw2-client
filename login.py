@@ -90,7 +90,8 @@ class login(DirectObject):
         self.passwordInput = self.passTextbox.get().strip()
         if(self.usernameInput is not "" and self.passwordInput is not ""):
             print "You pressed Submit", self.usernameInput, " ; ",self.passwordInput
-            self.cManager.sendRequest(Constants.CMSG_AUTH, self.usernameInput+" "+self.passwordInput);
+#             self.cManager.sendRequest(Constants.CMSG_AUTH, self.usernameInput+" "+self.passwordInput);
+            self.cManager.sendRequest(Constants.CMSG_AUTH, {'username': self.usernameInput, 'password': self.passwordInput})
         else:
             print "Please enter in a username and password"
     def clickedCancel(self):
@@ -106,6 +107,7 @@ class login(DirectObject):
         if self.registerPassword == self.registerCPassword:
             print "Success (",self.registerUsername, ", ",self.registerPassword,", ",self.registerCPassword,")"
             self.cManager.sendRequest(Constants.CMSG_REGISTER, self.registerUsername+" "+self.registerPassword)
+            
             self.createLoginWindow()
         else:
             self.failed = OnscreenText(text="Your password does not match Confirm Password.", pos=(-0.5, 0, 1), scale=0.06,fg=(1,0.5,0.5,1), align=TextNode.ACenter,mayChange=0)
