@@ -5,6 +5,7 @@ from net.request.RequestRandomString import RequestRandomString
 from net.request.RequestRandomShort import RequestRandomShort
 from net.request.RequestRandomFloat import RequestRandomFloat
 from net.request.RequestLogin import RequestLogin
+from net.request.RequestCreateAccount import RequestCreateAccount
 
 class ServerRequestTable:
     """
@@ -23,7 +24,7 @@ class ServerRequestTable:
 #        self.add(Constants.CMSG_DISCONNECT, 'RequestLogout')
 #        self.add(Constants.CMSG_GO_TO_CHARACTER_SELECTION, 'RequestGoToCharacterSelection')
 #        self.add(Constants.CMSG_SELECT_CHARACTER, 'RequestSelectCharacter')
-#        self.add(Constants.CMSG_REGISTER, 'RequestCreateAccount')
+        self.add(Constants.CMSG_REGISTER, 'RequestCreateAccount')
 #        self.add(Constants.CMSG_CREATE_CHARACTER,'RequestCreateCharacter')
 #        self.add(Constants.CMSG_CHAT, 'RequestChat')
 #        self.add(Constants.CMSG_MOVE, 'RequestMove')

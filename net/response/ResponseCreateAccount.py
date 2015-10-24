@@ -3,24 +3,18 @@ from traceback import print_exc
 from common.Constants import Constants
 from net.response.ServerResponse import ServerResponse
 
-class ResponseLogin(ServerResponse):
+class ResponseCreateAccount(ServerResponse):
 
     def execute(self, data):
 
         try:
 			self.flag = data.getInt32()
 			if self.flag:
-				# success. grab character list
-				self.characterCount = data.getInt32()
-				print 'Login success. Character count = ', self.characterCount
+				# registration success.
+				print 'registration success'
 				# loop through the list
-				for i in range(self.characterCount):
-					characterID = data.getInt32()
-					characterType = data.getInt32()
-					characterName = data.getString()
-					print 'Character ' , i, ': ID = ', characterID, '. Type = ', characterType, '. Name = ', characterName
 			else:
-				# login fail. check error type. error type msg will be added in Constants later
+				# registration fail. check error type. error type msg will be added in Constants later
 				errorID = data.getInt32()
 				print 'Error ID: ', errorID
 				

@@ -80,7 +80,7 @@ class ConnectionManager:
 
             if request != None:
                 request.set(self.cWriter, self.connection)
-                request.send(**args)
+                request.send(args)
 
     def handleResponse(self, responseCode, data):
         """Prepare a response packet to be processed.

@@ -4,14 +4,14 @@ from direct.distributed.PyDatagram import PyDatagram
 from common.Constants import Constants
 from net.request.ServerRequest import ServerRequest
 
-class RequestLogin(ServerRequest):
+class RequestCreateAccount(ServerRequest):
 
 
     def send(self, kwargs):
 
         try:
             pkg = PyDatagram()
-            pkg.addUint16(Constants.CMSG_AUTH)
+            pkg.addUint16(Constants.CMSG_REGISTER)
             pkg.addString(kwargs['username'])
             pkg.addString(kwargs['password'])
             self.cWriter.send(pkg, self.connection)

@@ -5,6 +5,7 @@ from net.response.ResponseRandomString import ResponseRandomString
 from net.response.ResponseRandomShort import ResponseRandomShort
 from net.response.ResponseRandomFloat import ResponseRandomFloat
 from net.response.ResponseLogin import ResponseLogin
+from net.response.ResponseCreateAccount import ResponseCreateAccount
 
 class ServerResponseTable:
     """
@@ -23,7 +24,7 @@ class ServerResponseTable:
 #        self.add(Constants.SMSG_DISCONNECT, 'ResponseLogout')
 #        self.add(Constants.SMSG_GO_TO_CHARACTER_SELECTION, 'ResponseGoToCharacterSelection')
 #        self.add(Constants.SMSG_SELECT_CHARACTER, 'ResponseSelectCharacter')
-#        self.add(Constants.SMSG_REGISTER, 'ResponseCreateAccount')
+        self.add(Constants.SMSG_REGISTER, 'ResponseCreateAccount')
 #        self.add(Constants.SMSG_CREATE_CHARACTER,'ResponseCreateCharacter')
 #        self.add(Constants.SMSG_CHAT, 'ResponseChat')
 #        self.add(Constants.SMSG_CHAT, 'ResponseMove')

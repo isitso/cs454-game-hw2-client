@@ -106,8 +106,8 @@ class login(DirectObject):
         self.registerCPassword = self.regInputCPass.get()
         if self.registerPassword == self.registerCPassword:
             print "Success (",self.registerUsername, ", ",self.registerPassword,", ",self.registerCPassword,")"
-            self.cManager.sendRequest(Constants.CMSG_REGISTER, self.registerUsername+" "+self.registerPassword)
-            
+#            self.cManager.sendRequest(Constants.CMSG_REGISTER, self.registerUsername+" "+self.registerPassword)
+            self.cManager.sendRequest(Constants.CMSG_REGISTER, {'username': self.registerUsername, 'password': self.registerPassword})
             self.createLoginWindow()
         else:
             self.failed = OnscreenText(text="Your password does not match Confirm Password.", pos=(-0.5, 0, 1), scale=0.06,fg=(1,0.5,0.5,1), align=TextNode.ACenter,mayChange=0)
