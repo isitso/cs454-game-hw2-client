@@ -1,11 +1,9 @@
-import direct.directbase.DirectStart
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
 from panda3d.core import Vec3, Vec4
 from panda3d.core import CompassEffect, KeyboardButton, WindowProperties
 from direct.gui.OnscreenText import OnscreenText
 from direct.actor.Actor import Actor
-from direct.showbase.DirectObject import DirectObject
 import sys, math
 
 # text helpers
@@ -159,10 +157,13 @@ class Sphere(object):
         # TODO
         return task.cont
 
-class World(DirectObject):
+class Game(object):
     """Handles the entire game environment."""
 
-    def __init__(self):
+    def __init__(self, main):
+        self.main = main
+
+    def init(self):
         # window setup
         base.win.setClearColor(Vec4(0, 0, 0, 1))
 
@@ -195,7 +196,7 @@ class World(DirectObject):
         render.setLight(render.attachNewNode(directionalLight))
 
         # accept special keys
-        self.accept('escape', sys.exit)
+        base.accept('escape', sys.exit)
 
         # create character
         self.character = Player('ralph')
@@ -212,6 +213,3 @@ class World(DirectObject):
 
         venus = Sphere('venus')
         venus.model.setPos(5, -5, 3.5)
-
-w = World()
-run()
