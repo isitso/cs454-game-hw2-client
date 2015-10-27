@@ -17,6 +17,9 @@ class Main(ShowBase):
         if self.startConnection():
             ShowBase.__init__(self)
 
+            taskMgr.add(self.cManager.updateRoutine, 'updateRoutine-Connection')
+            taskMgr.doMethodLater(5, self.cManager.checkConnection, 'checkConnection')
+
             self.login = Login(self)
             self.characterSelection = CharacterSelection(self)
             self.game = Game(self)
