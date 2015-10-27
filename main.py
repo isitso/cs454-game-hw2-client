@@ -12,15 +12,18 @@ from game import Game
 class Main(ShowBase):
     def __init__(self):
         self.cManager = ConnectionManager()
-        if True or self.startConnection():
+        self.state = Constants.GAMESTATE_NOT_LOGGED_IN
+
+        if self.startConnection():
             ShowBase.__init__(self)
 
             self.login = Login(self)
             self.characterSelection = CharacterSelection(self)
             self.game = Game(self)
 
+            self.login.createLoginWindow()
             #self.characterSelection.createSelectionWindow()
-            self.game.init()
+            #self.game.init()
 
             self.run()
 

@@ -237,7 +237,7 @@ class Login(object):
         username = self.userTextbox.get().strip()
         password = self.passTextbox.get().strip()
         if username != '' and password != '':
-            self.main.cManager.sendRequest(Constants.CMSG_AUTH, {'username': username, 'password': password})
+            self.main.cManager.sendRequest(Constants.C_AUTH, {'username': username, 'password': password})
         else:
             self.displayError('Please enter a username and password.')
 
@@ -256,7 +256,7 @@ class Login(object):
         if username != '':
             if password != '':
                 if cpass == password:
-                    self.main.cManager.sendRequest(Constants.CMSG_REGISTER, {'username': username, 'password': password})
+                    self.main.cManager.sendRequest(Constants.C_REGISTER, {'username': username, 'password': password})
                     self.destroyRegisterWindow()
                     self.createLoginWindow()
                 else:

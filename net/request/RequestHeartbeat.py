@@ -4,19 +4,15 @@ from direct.distributed.PyDatagram import PyDatagram
 from common.Constants import Constants
 from net.request.ServerRequest import ServerRequest
 
-class RequestLogin(ServerRequest):
-
-
-    def send(self, username = None):
-
+class RequestHeartbeat(ServerRequest):
+    def send(self):
         try:
             pkg = PyDatagram()
-            pkg.addUint16(Constants.CMSG_AUTH)
-            pkg.addString(username)
+            pkg.addUint16(Constants.C_HEARTBEAT)
 
             self.cWriter.send(pkg, self.connection)
 
-            #self.log('Sent [' + str(Constants.RAND_STRING) + '] Int Request')
+            self.log('Sent [' + str(Constants.C_HEARTBEAT) + '] RequestHeartbeat')
         except:
-            self.log('Bad [' + str(Constants.RAND_STRING) + '] Int Request')
+            self.log('Bad [' + str(Constants.C_HEARTBEAT) + '] RequestHeartbeat')
             print_exc()

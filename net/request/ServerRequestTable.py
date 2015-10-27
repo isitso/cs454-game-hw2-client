@@ -1,10 +1,13 @@
 from common.Constants import Constants
 
-from net.request.RequestRandomInt import RequestRandomInt
-from net.request.RequestRandomString import RequestRandomString
-from net.request.RequestRandomShort import RequestRandomShort
-from net.request.RequestRandomFloat import RequestRandomFloat
-from net.request.RequestLogin import RequestLogin
+from net.request.RequestAuth import RequestAuth
+from net.request.RequestDisconnect import RequestDisconnect
+from net.request.RequestGoToCharacterSelection import RequestGoToCharacterSelection
+from net.request.RequestSelectCharacter import RequestSelectCharacter
+from net.request.RequestRegister import RequestRegister
+from net.request.RequestMove import RequestMove
+from net.request.RequestChat import RequestChat
+from net.request.RequestHeartbeat import RequestHeartbeat
 
 class ServerRequestTable:
     """
@@ -15,12 +18,15 @@ class ServerRequestTable:
 
     def __init__(self):
         """Initialize the request table."""
-        self.add(Constants.RAND_INT, 'RequestRandomInt')
-        self.add(Constants.RAND_STRING, 'RequestRandomString')
-        self.add(Constants.RAND_SHORT, 'RequestRandomShort')
-        self.add(Constants.RAND_FLOAT, 'RequestRandomFloat')
-        self.add(Constants.CMSG_AUTH, 'RequestLogin')
-        self.add(Constants.CMSG_CREATE_CHARACTER,'RequestCreateCharacter')
+        self.add(Constants.C_AUTH, 'RequestAuth')
+        self.add(Constants.C_DISCONNECT, 'RequestDisconnect')
+        self.add(Constants.C_GO_TO_CHARACTER_SELECTION, 'RequestGoToCharacterSelection')
+        self.add(Constants.C_SELECT_CHARACTER, 'RequestSelectCharacter')
+        self.add(Constants.C_REGISTER, 'RequestRegister')
+        #self.add(Constants.C_CREATE_CHARACTER, 'RequestCreateCharacter')
+        self.add(Constants.C_MOVE, 'RequestMove')
+        self.add(Constants.C_CHAT, 'RequestChat')
+        self.add(Constants.C_HEARTBEAT, 'RequestHeartbeat')
 
     def add(self, constant, name):
         """Map a numeric request code with the name of an existing request module."""

@@ -1,10 +1,14 @@
 from common.Constants import Constants
 
-from net.response.ResponseRandomInt import ResponseRandomInt
-from net.response.ResponseRandomString import ResponseRandomString
-from net.response.ResponseRandomShort import ResponseRandomShort
-from net.response.ResponseRandomFloat import ResponseRandomFloat
-from net.response.ResponseLogin import ResponseLogin
+from net.response.ResponseAuth import ResponseAuth
+from net.response.ResponseDisconnect import ResponseDisconnect
+from net.response.ResponseGoToCharacterSelection import ResponseGoToCharacterSelection
+from net.response.ResponseSelectCharacter import ResponseSelectCharacter
+from net.response.ResponseRegister import ResponseRegister
+from net.response.ResponseMove import ResponseMove
+from net.response.ResponsePlayerLogout import ResponsePlayerLogout
+from net.response.ResponseChat import ResponseChat
+from net.response.ResponseSpawn import ResponseSpawn
 
 class ServerResponseTable:
     """
@@ -15,12 +19,16 @@ class ServerResponseTable:
 
     def __init__(self):
         """Initialize the response table."""
-        self.add(Constants.RAND_INT, 'ResponseRandomInt')
-        self.add(Constants.RAND_STRING, 'ResponseRandomString')
-        self.add(Constants.RAND_SHORT, 'ResponseRandomShort')
-        self.add(Constants.RAND_FLOAT, 'ResponseRandomFloat')
-        self.add(Constants.CMSG_AUTH, 'ResponseLogin')
-        self.add(Constants.CMSG_CREATE_CHARACTER,'ResponseCreateCharacter')
+        self.add(Constants.S_AUTH, 'ResponseAuth')
+        self.add(Constants.S_DISCONNECT, 'ResponseDisconnect')
+        self.add(Constants.S_GO_TO_CHARACTER_SELECTION, 'ResponseGoToCharacterSelection')
+        self.add(Constants.S_SELECT_CHARACTER, 'ResponseSelectCharacter')
+        self.add(Constants.S_REGISTER, 'ResponseRegister')
+        #self.add(Constants.S_CREATE_CHARACTER, 'ResponseCreateCharacter')
+        self.add(Constants.S_PLAYER_MOVE, 'ResponseMove')
+        self.add(Constants.S_PLAYER_LOGOUT, 'ResponsePlayerLogout')
+        self.add(Constants.S_CHAT, 'ResponseChat')
+        self.add(Constants.S_SPAWN, 'ResponseSpawn')
 
     def add(self, constant, name):
         """Map a numeric response code with the name of an existing response module."""
