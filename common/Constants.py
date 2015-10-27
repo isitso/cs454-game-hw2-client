@@ -30,3 +30,7 @@ class Constants:
     GAMESTATE_NOT_LOGGED_IN             = 0
     GAMESTATE_LOGGED_IN                 = 1
     GAMESTATE_PLAYING                   = 2
+
+    CHAR_RALPH                          = 1
+    CHAR_VEHICLE                        = 2
+    CHAR_PANDA                          = 3

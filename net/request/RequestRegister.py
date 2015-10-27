@@ -5,11 +5,12 @@ from common.Constants import Constants
 from net.request.ServerRequest import ServerRequest
 
 class RequestRegister(ServerRequest):
-    def send(self):
+    def send(self, kwargs):
         try:
             pkg = PyDatagram()
             pkg.addUint16(Constants.C_REGISTER)
-            # TODO
+            pkg.addString(kwargs['username'])
+            pkg.addString(kwargs['password'])
 
             self.cWriter.send(pkg, self.connection)
 
