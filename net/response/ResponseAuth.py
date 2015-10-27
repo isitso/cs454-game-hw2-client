@@ -9,7 +9,8 @@ class ResponseAuth(ServerResponse):
             self.result = data.getInt32()
             if not self.result:
                 self.error = data.getInt32()
-
+            print 'something'
+				
             self.log('Received [' + str(Constants.S_AUTH) + '] ResponseAuth')
         except:
             self.log('Bad [' + str(Constants.S_AUTH) + '] ResponseAuth')

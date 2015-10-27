@@ -24,8 +24,8 @@ class Main(ShowBase):
             self.characterSelection = CharacterSelection(self)
             self.game = Game(self)
 
-            self.login.createLoginWindow()
-            #self.characterSelection.createSelectionWindow()
+            #self.login.createLoginWindow()
+            self.characterSelection.createSelectionWindow()
             #self.game.init()
 
             self.run()
