@@ -32,7 +32,6 @@ class ConnectionManager:
         to read packets from the socket.
 
         """
-        #try:
         if self.connection == None:
             self.connection = self.cManager.openTCPClientConnection(Constants.SERVER_IP,
                                                                     Constants.SERVER_PORT,
@@ -45,8 +44,6 @@ class ConnectionManager:
                 #taskMgr.doMethodLater(5, self.checkConnection, 'checkConnection')
 
                 return True
-        except:
-            pass
 
         return False
 
