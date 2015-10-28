@@ -34,7 +34,7 @@ class CharacterSelection(object):
                                      command = lambda: self.clicked(Constants.CHAR_RALPH),
                                      pos = (-0.3, 0, -1.8),
                                      text_bg = (1, 0.5, 0.5, 1),
-									 relief = None)
+                                     relief = None)
 
         self.pandaBtn = DirectButton(self.frame,
                                      text = 'Panda',
@@ -42,7 +42,7 @@ class CharacterSelection(object):
                                      command = lambda: self.clicked(Constants.CHAR_PANDA),
                                      pos = (0.5, 0, -1.8),
                                      text_bg = (1, 0.5, 0.5, 1),
-									 relief = None)
+                                     relief = None)
 
         self.carBtn = DirectButton(self.frame,
                                    text = 'Car',
@@ -50,62 +50,62 @@ class CharacterSelection(object):
                                    command = lambda: self.clicked(Constants.CHAR_VEHICLE),
                                    pos = (1.3, 0, -1.8),
                                    text_bg = (1, 0.5, 0.5, 1),
-								   relief = None)
-		
-		# create character selection Scene
+                                   relief = None)
+
+        # create character selection Scene
         self.createScene()
 
-
-
     def createScene(self):
-	""" Load 3 models and put them into the scene. All 3 should look at same direction.
-		Load the environment.
-		Set the camera to look at the middle model.
-		Put them into a scene node
-	"""
-	    
+        """ Load 3 models and put them into the scene. All 3 should look at same direction.
+            Load the environment.
+            Set the camera to look at the middle model.
+            Put them into a scene node
+        """
+
         # disable the mouse. have to do this. for some reason, setting camera doesn't work
-		# without disabling mouse
+        # without disabling mouse
         base.disableMouse()
         
         # load environment
-        self.environ = self.main.loader.loadModel('models/environment')
+        self.environ = loader.loadModel('models/environment')
         self.environ.setScale(0.25, 0.25, 0.25)
         self.environ.setPos(-8, 42, 0)
         self.environ.reparentTo(self.main.render)
-        
-		# load the models
+
+        # load the models
         print 'loading models'
-        self.panda = Actor('models/panda-model',
-                                    {'run': 'models/panda-walk4',
-                                     'walk': 'models/panda-walk4'})
         self.ralph = Actor('models/ralph',
-                           {'run': 'models/ralph-run',
-                            'walk': 'models/ralph-walk'})
-        self.car = self.main.loader.loadModel('models/car')
-		
-		# scale them down and set the positions
-        self.panda.setScale(0.001, 0.001, 0.001)
-        self.panda.setPos(0, 0, 0)
+                                {'run': 'models/ralph-run',
+                                 'walk': 'models/ralph-walk'})
+        self.panda = Actor('models/panda-model',
+                                {'run': 'models/panda-walk4',
+                                 'walk': 'models/panda-walk4'})
+        self.car = loader.loadModel('models/car')
+
+        # scale them down and set the positions
         self.ralph.setScale(0.1, 0.1, 0.1)
         self.ralph.setPos(-1, 0, 0)
+        self.panda.setScale(0.001, 0.001, 0.001)
+        self.panda.setPos(0, 0, 0)
         self.car.setScale(0.3)
-        self.car.setPos(1, 0, 0)
-        
+        self.car.setPos(1, 0.2, 0.1)
+
         # set camera
         base.camera.setPos(0, -5, 1)
-        base.camera.lookAt(0, 0, .5)
+        base.camera.lookAt(0, 0, 0.5)
 
         # create a top node for the character selection scene
         self.characterSelectionScene = render.attachNewNode('characterSelectionScene')
-		# attach the models to the scene
+
+        # attach the models to the scene
         self.panda.reparentTo(self.characterSelectionScene)
         self.ralph.reparentTo(self.characterSelectionScene)
         self.car.reparentTo(self.characterSelectionScene)
-		# set the animation for models
+
+        # set the animation for models
         self.panda.loop('walk')
         self.ralph.loop('walk')
-		
+
     def destroySelectionWindow(self):
         self.frame.destroy()
         self.frame = None
@@ -113,6 +113,11 @@ class CharacterSelection(object):
         self.ralphBtn = None
         self.pandaBtn = None
         self.carBtn = None
+
+        self.enrion.removeNode()
+        self.environ = None
+        self.characterSelectionScene.removeNode()
+        self.characterSelectionScene = None
 
     def clicked(self, char):
         self.main.cManager.sendRequest(Constants.C_SELECT_CHARACTER, {'character': char})
