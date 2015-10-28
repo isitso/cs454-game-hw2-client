@@ -2,9 +2,9 @@ import sys, math
 
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
-from panda3d.core import Vec3, Vec4
+from panda3d.core import Point3, Vec3, Vec4
 from panda3d.core import CompassEffect, KeyboardButton, WindowProperties
-from direct.interval.LerpInterval import LerpPosHprInterval
+from direct.interval.LerpInterval import LerpPosInterval, LerpPosHprInterval
 from direct.gui.OnscreenText import OnscreenText
 from direct.actor.Actor import Actor
 
@@ -29,6 +29,10 @@ class Camera(object):
         self.heading = 0
         self.pitch = 0
 
+        # class properties for camera zoom
+        self.targetY = -6
+        self.interval = None
+
         # find screen center
         props = base.win.getProperties()
         self.centerX = props.getXSize() / 2
@@ -50,13 +54,15 @@ class Camera(object):
 
         # set up camera
         base.camera.reparentTo(self.floater)
-        base.camera.setY(-6) # original distance from model
+        base.camera.setY(self.targetY) # original distance from model
         base.camera.lookAt(self.floater)
 
         # camera zooming
         # TODO move into method, clamp Y value?
-        base.accept('wheel_up', lambda: self.zoom(-100))
-        base.accept('wheel_down', lambda: self.zoom(100))
+        base.accept('wheel_up', lambda: self.zoom(2))
+        base.accept('shift-wheel_up', lambda: self.zoom(2))
+        base.accept('wheel_down', lambda: self.zoom(-2))
+        base.accept('shift-wheel_down', lambda: self.zoom(-2))
 
         # start task
         taskMgr.add(self.mouseControl, 'Camera.mouseControl')
@@ -81,8 +87,15 @@ class Camera(object):
         return task.cont
 
     def zoom(self, amount):
-        y = base.camera.getY() - amount * globalClock.getDt()
-        base.camera.setY(clampScalar(y, -2, -15))
+        self.targetY = clampScalar(self.targetY + amount, -2, -15)
+
+        if self.interval is not None: self.interval.pause()
+        self.interval = LerpPosInterval(base.camera,
+                                        duration = 0.6,
+                                        pos = Vec3(base.camera.getX(), self.targetY, base.camera.getZ()),
+                                        blendType = 'easeOut',
+                                        name = 'Camera.zoom')
+        self.interval.start()
 
 class Character(object):
     """Handles character models and animations."""
