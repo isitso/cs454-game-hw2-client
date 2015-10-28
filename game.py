@@ -251,13 +251,6 @@ class Game(object):
         # accept special keys
         base.accept('escape', sys.exit)
 
-        # create character
-        self.character = Character(1, Constants.CHAR_RALPH)
-        self.player = Player(self.character)
-
-        # create camera
-        self.camera = Camera(self.character.entity)
-
         # FIXME test spheres
         sun = Sphere('sun')
         sun.model.setPos(10, 10, 7)
@@ -267,3 +260,14 @@ class Game(object):
 
         venus = Sphere('venus')
         venus.model.setPos(5, -5, 3.5)
+
+        # track game entities
+        self.character = None
+        self.player = None
+        self.camera = None
+        self.characters = {}
+
+        # DEBUG offline: create character and camera
+        #self.character = Character(1, Constants.CHAR_RALPH)
+        #self.player = Player(self.character)
+        #self.camera = Camera(self.character.entity)
