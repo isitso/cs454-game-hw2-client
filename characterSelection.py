@@ -114,7 +114,7 @@ class CharacterSelection(object):
         self.pandaBtn = None
         self.carBtn = None
 
-        self.enrion.removeNode()
+        self.environ.removeNode()
         self.environ = None
         self.characterSelectionScene.removeNode()
         self.characterSelectionScene = None
