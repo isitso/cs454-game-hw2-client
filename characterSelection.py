@@ -32,23 +32,38 @@ class CharacterSelection(object):
         self.ralphBtn = DirectButton(self.frame,
                                      text = 'Ralph',
                                      scale = 0.1,
+<<<<<<< HEAD
                                      command = lambda: self.clicked('ralph'),
                                      pos = (-0.3, 0, -1.8),
                                      geom = (self.btn_maps.find('models/button_ready'),
                                              self.btn_maps.find('models/button_click'),
                                              self.btn_maps.find('models/button_rollover')))
+=======
+                                     command = lambda: self.clicked(Constants.CHAR_RALPH),
+                                     pos = (-0.3, 0, -1))
+>>>>>>> master
 
         self.pandaBtn = DirectButton(self.frame,
                                      text = 'Panda',
                                      scale = 0.1,
+<<<<<<< HEAD
                                      command = lambda: self.clicked('panda'),
                                      pos = (0.5, 0, -1.8))
+=======
+                                     command = lambda: self.clicked(Constants.CHAR_PANDA),
+                                     pos = (0.5, 0, -1))
+>>>>>>> master
 
         self.carBtn = DirectButton(self.frame,
                                    text = 'Car',
                                    scale = 0.1,
+<<<<<<< HEAD
                                    command = lambda: self.clicked('car'),
                                    pos = (1.3, 0, -1.8))
+=======
+                                   command = lambda: self.clicked(Constants.CHAR_VEHICLE),
+                                   pos = (1.3, 0, -1))
+>>>>>>> master
 
         # disable the mouse
         base.disableMouse()
@@ -95,4 +110,4 @@ class CharacterSelection(object):
         self.carBtn = None
 
     def clicked(self, char):
-        self.main.cManager.sendRequest(Constants.C_SELECT_CHARACTER, char)
+        self.main.cManager.sendRequest(Constants.C_SELECT_CHARACTER, {'character': char})

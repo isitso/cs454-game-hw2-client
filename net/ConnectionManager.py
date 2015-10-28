@@ -13,7 +13,8 @@ from net.response.ServerResponseTable import ServerResponseTable
 
 class ConnectionManager:
 
-    def __init__(self):
+    def __init__(self, main):
+        self.main = main
 
         self.cManager = QueuedConnectionManager()
         self.cListener = QueuedConnectionListener(self.cManager, 0)
@@ -57,7 +58,6 @@ class ConnectionManager:
 
         """
         if self.connection != None:
-            taskMgr.remove('updateRoutine-Main')
             taskMgr.remove('updateRoutine-Connection')
             taskMgr.remove('checkConnection')
 
@@ -89,7 +89,7 @@ class ConnectionManager:
         response = self.rsTable.get(responseCode)
 
         if response != None:
-            #response.set(main)
+            response.set(self.main)
             response.execute(data)
 
     def checkConnection(self, task):

@@ -11,8 +11,8 @@ from game import Game
 
 class Main(ShowBase):
     def __init__(self):
-        self.cManager = ConnectionManager()
         self.state = Constants.GAMESTATE_NOT_LOGGED_IN
+        self.cManager = ConnectionManager(self)
 
         if self.startConnection():
             ShowBase.__init__(self)
