@@ -6,13 +6,7 @@ from net.response.ServerResponse import ServerResponse
 class ResponseAuth(ServerResponse):
     def execute(self, data):
         try:
-<<<<<<< HEAD
-            self.result = data.getInt32()
-            if not self.result:
-                self.error = data.getInt32()
-            print 'something'
-				
-=======
+
             if self.main.state == Constants.GAMESTATE_NOT_LOGGED_IN:
                 self.result = data.getInt32()
                 if self.result:
@@ -28,7 +22,6 @@ class ResponseAuth(ServerResponse):
                     elif self.error == 2: self.main.login.displayError('Error: Account already in use.')
                     else: self.main.login.displayError('Error: Login failed. Unknown error code: ' + str(self.error))
 
->>>>>>> master
             self.log('Received [' + str(Constants.S_AUTH) + '] ResponseAuth')
         except:
             self.log('Bad [' + str(Constants.S_AUTH) + '] ResponseAuth')
