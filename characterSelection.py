@@ -27,30 +27,30 @@ class CharacterSelection(object):
                                   parent = self.frame,
                                   mayChange = False)
 
-        #load button maps
-        self.btn_maps = self.main.loader.loadModel('models/button_maps.egg')
         self.ralphBtn = DirectButton(self.frame,
                                      text = 'Ralph',
                                      scale = 0.1,
                                      command = lambda: self.clicked(Constants.CHAR_RALPH),
                                      pos = (-0.3, 0, -1.8),
-                                     geom = (self.btn_maps.find('models/button_ready'),
-                                             self.btn_maps.find('models/button_click'),
-                                             self.btn_maps.find('models/button_rollover')))
-
+                                     text_bg = (0.1, 0.5, 0.9, 1),
+									 relief = None)
 
         self.pandaBtn = DirectButton(self.frame,
                                      text = 'Panda',
                                      scale = 0.1,
-
                                      command = lambda: self.clicked(Constants.CHAR_PANDA),
-                                     pos = (0.5, 0, -1.8))
+                                     pos = (0.5, 0, -1.8),
+                                     text_bg = (0.1, 0.5, 0.9, 1),
+									 relief = None)
 
         self.carBtn = DirectButton(self.frame,
                                    text = 'Car',
                                    scale = 0.1,
                                    command = lambda: self.clicked(Constants.CHAR_VEHICLE),
-                                   pos = (1.3, 0, -1.8))
+                                   pos = (1.3, 0, -1.8),
+                                   text_bg = (0.1, 0.5, 0.9, 1),
+									relief = None)
+        self.carBtn.setFrameSize(2.1)
 
 
         # disable the mouse
@@ -70,22 +70,21 @@ class CharacterSelection(object):
         self.ralph = Actor('models/ralph',
                            {'run': 'models/ralph-run',
                             'walk': 'models/ralph-walk'})
+        self.car = self.main.loader.loadModel('models/car')
         self.panda.setScale(0.001, 0.001, 0.001)
         self.panda.setPos(0, 0, 0)
         self.ralph.setScale(0.1, 0.1, 0.1)
         self.ralph.setPos(-1, 0, 0)
+        self.car.setScale(0.3)
+        self.car.setPos(1, 0, 0)
         
         # set camera
         base.camera.setPos(0, -5, 1)
         base.camera.lookAt(0, 0, .5)
-        
-#         self.main.camera.lookAt(self.panda.getPos())
-#         seek.ralph = Actor('models/ralph',
-#                                     {'run': 'models/ralph-run',
-#                                      'walk': 'models/ralph-walk'})
-#         self.ralph.setScale(0.003)
+
         self.panda.reparentTo(render)
         self.ralph.reparentTo(render)
+        self.car.reparentTo(render)
         self.panda.loop('walk')
         self.ralph.loop('walk')
 		
