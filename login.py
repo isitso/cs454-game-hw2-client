@@ -28,8 +28,8 @@ class Login(object):
     # login screen
     def createLoginWindow(self):
         self.frame = DirectFrame(frameColor = (0, 0, 0, 1),
-                                 frameSize = (-1, 1, -1, 1),
-                                 pos = (-0.5, 0, 0.5))
+                                 frameSize = (-1.35, 1.35, -1, 1),
+                                 pos = (0, 0, 0))
 
         self.title = OnscreenText(text = 'Login',
                                   pos = (0, 0.3),
@@ -80,17 +80,23 @@ class Login(object):
                                       text = 'Login',
                                       scale = 0.08,
                                       command = self.clickedSubmit,
-                                      pos = (0.8, 0.0, -0.90))
+                                      pos = (0.8, 0.0, -0.90),
+                                      text_bg = (1, 0.5, 0.5, 1),
+								      relief = None)
         self.registerBtn = DirectButton(self.frame, # parent
                                         text = 'Register',
                                         scale = 0.08,
                                         command = self.clickedRegister,
-                                        pos = (0.5, 0.0, -0.90))
+                                        pos = (0.5, 0.0, -0.90),
+                                        text_bg = (1, 0.5, 0.5, 1),
+								        relief = None)
         self.cancelBtn = DirectButton(self.frame, # parent
                                       text = 'Cancel',
                                       scale = 0.08,
                                       command = self.clickedCancel,
-                                      pos = (0.2, 0.0, -0.90))
+                                      pos = (0.2, 0.0, -0.90),
+                                      text_bg = (1, 0.5, 0.5, 1),
+								      relief = None)
 
     def destroyLoginWindow(self):
         self.frame.destroy()
@@ -108,8 +114,8 @@ class Login(object):
     # register screen
     def createRegisterWindow(self):
         self.frame = DirectFrame(frameColor = (0, 0, 0, 1),
-                                 frameSize = (-1, 1, -1, 1),
-                                 pos = (-0.5, 0, 0.5))
+                                 frameSize = (-1.35, 1.35, -1, 1),
+                                 pos = (0, 0, 0))
 
         self.title = OnscreenText(text = 'Register',
                                   pos = (0, 0.3),
@@ -178,12 +184,16 @@ class Login(object):
                                          text = 'Register',
                                          scale = 0.08,
                                          command = self.clickedRegRegister,
-                                         pos = (0.8, 0.0, -0.90))
+                                         pos = (0.8, 0.0, -0.90),
+                                         text_bg = (1, 0.5, 0.5, 1),
+								         relief = None)
         self.cancelBtn =  DirectButton(self.frame, # parent
                                        text = 'Cancel',
                                        scale = 0.08,
                                        command = self.clickedRegCancel,
-                                       pos=(0.2, 0.0, -0.90))
+                                       pos=(0.2, 0.0, -0.90),
+                                       text_bg = (1, 0.5, 0.5, 1),
+								       relief = None)
 
     def destroyRegisterWindow(self):
         self.frame.destroy()

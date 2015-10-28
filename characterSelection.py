@@ -33,7 +33,7 @@ class CharacterSelection(object):
                                      scale = 0.1,
                                      command = lambda: self.clicked(Constants.CHAR_RALPH),
                                      pos = (-0.3, 0, -1.8),
-                                     text_bg = (0.1, 0.5, 0.9, 1),
+                                     text_bg = (1, 0.5, 0.5, 1),
 									 relief = None)
 
         self.pandaBtn = DirectButton(self.frame,
@@ -41,7 +41,7 @@ class CharacterSelection(object):
                                      scale = 0.1,
                                      command = lambda: self.clicked(Constants.CHAR_PANDA),
                                      pos = (0.5, 0, -1.8),
-                                     text_bg = (0.1, 0.5, 0.9, 1),
+                                     text_bg = (1, 0.5, 0.5, 1),
 									 relief = None)
 
         self.carBtn = DirectButton(self.frame,
@@ -49,9 +49,8 @@ class CharacterSelection(object):
                                    scale = 0.1,
                                    command = lambda: self.clicked(Constants.CHAR_VEHICLE),
                                    pos = (1.3, 0, -1.8),
-                                   text_bg = (0.1, 0.5, 0.9, 1),
-									relief = None)
-        self.carBtn.setFrameSize(2.1)
+                                   text_bg = (1, 0.5, 0.5, 1),
+								   relief = None)
 		
 		# create character selection Scene
         self.createScene()
