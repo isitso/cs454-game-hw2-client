@@ -13,6 +13,7 @@ class CharacterSelection(object):
         self.ralphBtn = None
         self.pandaBtn = None
         self.carBtn = None
+        self.characterSelectionScene = None
 
     def createSelectionWindow(self):
         self.frame = DirectFrame(frameColor = (0, 0, 0, 0),
@@ -51,9 +52,21 @@ class CharacterSelection(object):
                                    text_bg = (0.1, 0.5, 0.9, 1),
 									relief = None)
         self.carBtn.setFrameSize(2.1)
+		
+		# create character selection Scene
+        self.createScene()
 
 
-        # disable the mouse
+
+    def createScene(self):
+	""" Load 3 models and put them into the scene. All 3 should look at same direction.
+		Load the environment.
+		Set the camera to look at the middle model.
+		Put them into a scene node
+	"""
+	    
+        # disable the mouse. have to do this. for some reason, setting camera doesn't work
+		# without disabling mouse
         base.disableMouse()
         
         # load environment
@@ -71,6 +84,8 @@ class CharacterSelection(object):
                            {'run': 'models/ralph-run',
                             'walk': 'models/ralph-walk'})
         self.car = self.main.loader.loadModel('models/car')
+		
+		# scale them down and set the positions
         self.panda.setScale(0.001, 0.001, 0.001)
         self.panda.setPos(0, 0, 0)
         self.ralph.setScale(0.1, 0.1, 0.1)
@@ -82,9 +97,13 @@ class CharacterSelection(object):
         base.camera.setPos(0, -5, 1)
         base.camera.lookAt(0, 0, .5)
 
-        self.panda.reparentTo(render)
-        self.ralph.reparentTo(render)
-        self.car.reparentTo(render)
+        # create a top node for the character selection scene
+        self.characterSelectionScene = render.attachNewNode('characterSelectionScene')
+		# attach the models to the scene
+        self.panda.reparentTo(self.characterSelectionScene)
+        self.ralph.reparentTo(self.characterSelectionScene)
+        self.car.reparentTo(self.characterSelectionScene)
+		# set the animation for models
         self.panda.loop('walk')
         self.ralph.loop('walk')
 		
