@@ -121,8 +121,9 @@ class Character(object):
                                      'walk': 'models/panda-walk4'})
             self.model.setScale(0.003)
         elif model == Constants.CHAR_VEHICLE:
-            # TODO
-            pass
+            self.model = Actor('models/car', {})
+            self.model.setScale(0.3)
+            self.model.setPos(0, 0.2, 0.1)
 
         self.model.reparentTo(self.entity)
 
