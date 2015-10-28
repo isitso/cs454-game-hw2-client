@@ -27,11 +27,16 @@ class CharacterSelection(object):
                                   parent = self.frame,
                                   mayChange = False)
 
+        #load button maps
+        self.btn_maps = self.main.loader.loadModel('models/button_maps.egg')
         self.ralphBtn = DirectButton(self.frame,
                                      text = 'Ralph',
                                      scale = 0.1,
                                      command = lambda: self.clicked('ralph'),
-                                     pos = (-0.3, 0, -1.8))
+                                     pos = (-0.3, 0, -1.8),
+                                     geom = (self.btn_maps.find('models/button_ready'),
+                                             self.btn_maps.find('models/button_click'),
+                                             self.btn_maps.find('models/button_rollover')))
 
         self.pandaBtn = DirectButton(self.frame,
                                      text = 'Panda',
