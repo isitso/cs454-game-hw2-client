@@ -190,25 +190,48 @@ class Player(object):
 class Sphere(object):
     """A mostly static sphere that spins when a Character is nearby."""
 
-    def __init__(self, type):
+    def __init__(self, game, type):
+        self.game = game
+
         self.model = loader.loadModel('models/planet_sphere')
         self.model.reparentTo(render)
 
         if type == 'sun':
             self.model.setTexture(loader.loadTexture('models/sun_1k_tex.jpg'), 1)
-            self.model.setScale(8)
+            self.scale = 8
         elif type == 'earth':
             self.model.setTexture(loader.loadTexture('models/earth_1k_tex.jpg'), 1)
-            self.model.setScale(4)
+            self.scale = 4
         elif type == 'venus':
             self.model.setTexture(loader.loadTexture('models/venus_1k_tex.jpg'), 1)
-            self.model.setScale(3)
+            self.scale = 3
 
+        self.model.setScale(self.scale)
+        self.spin = self.model.hprInterval(self.scale * 3, Vec3(360, 0, 0))
+        self.spin.loop()  # set up the interval to loop
+        self.spin.pause() # then pause so we don't start in motion
+
+        self.maxDist = self.scale * 2.5
         taskMgr.add(self.move, 'Sphere.move')
 
     def move(self, task):
-        # TODO
+        spinning = self.checkDistance(self.game.character)
+        if not spinning:
+            for id in self.game.characters:
+                spinning = self.checkDistance(self.game.characters[id])
+                if spinning: break
+
+        if spinning != self.spin.isPlaying():
+            if spinning:
+                self.spin.resume()
+            else:
+                self.spin.pause()
+
         return task.cont
+
+    def checkDistance(self, character):
+        if character is None: return False
+        return self.model.getPos(character.entity).lengthSquared() <= (self.maxDist * self.maxDist)
 
 class Game(object):
     """Handles the entire game environment."""
@@ -251,15 +274,15 @@ class Game(object):
         # accept special keys
         base.accept('escape', sys.exit)
 
-        # FIXME test spheres
-        sun = Sphere('sun')
-        sun.model.setPos(10, 10, 7)
+        # create spheres
+        sun = Sphere(self, 'sun')
+        sun.model.setPos(-15, -15, 8)
 
-        earth = Sphere('earth')
-        earth.model.setPos(-8, -8, 5)
+        earth = Sphere(self, 'earth')
+        earth.model.setPos(-12, 12, 5)
 
-        venus = Sphere('venus')
-        venus.model.setPos(5, -5, 3.5)
+        venus = Sphere(self, 'venus')
+        venus.model.setPos(10, 10, 3.5)
 
         # track game entities
         self.character = None
