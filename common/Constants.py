@@ -6,6 +6,8 @@ class Constants:
     DEBUG = True
     MSG_NONE                            = 0
 
+    TICKRATE                            = 10
+
     C_AUTH                              = 101
     C_DISCONNECT                        = 102
     C_GO_TO_CHARACTER_SELECTION         = 103

@@ -1,12 +1,18 @@
+import sys, math
+
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
 from panda3d.core import Vec3, Vec4
 from panda3d.core import CompassEffect, KeyboardButton, WindowProperties
+from direct.interval.LerpInterval import LerpPosHprInterval
 from direct.gui.OnscreenText import OnscreenText
 from direct.actor.Actor import Actor
-import sys, math
 
-# text helpers
+from common.Constants import Constants
+
+# helpers
+from direct.showbase.PythonUtil import clampScalar
+
 def addInstructions(pos, msg):
     return OnscreenText(text = msg, style = 1, fg = (1, 1, 1, 1),
                         pos = (-1.3, pos), align = TextNode.ALeft, scale = .05)
@@ -49,8 +55,8 @@ class Camera(object):
 
         # camera zooming
         # TODO move into method, clamp Y value?
-        base.accept('wheel_up', lambda: base.camera.setY(base.camera.getY() + 100 * globalClock.getDt()))
-        base.accept('wheel_down', lambda: base.camera.setY(base.camera.getY() - 100 * globalClock.getDt()))
+        base.accept('wheel_up', lambda: self.zoom(-100))
+        base.accept('wheel_down', lambda: self.zoom(100))
 
         # start task
         taskMgr.add(self.mouseControl, 'Camera.mouseControl')
@@ -74,10 +80,71 @@ class Camera(object):
 
         return task.cont
 
-class Player(object):
-    """Handles player character motion, including animation."""
+    def zoom(self, amount):
+        y = base.camera.getY() - amount * globalClock.getDt()
+        base.camera.setY(clampScalar(y, -2, -15))
 
-    def __init__(self, model):
+class Character(object):
+    """Handles character models and animations."""
+
+    def __init__(self, id, model):
+        # class properties
+        self.entity = render.attachNewNode('entity')
+        self.target = render.attachNewNode('target')
+        self.id = id
+
+        self.tickRate = Constants.TICKRATE
+        self.isMoving = False
+
+        # set up model
+        if model == Constants.CHAR_RALPH:
+            self.model = Actor('models/ralph',
+                                    {'run': 'models/ralph-run',
+                                     'walk': 'models/ralph-walk'})
+            self.model.setScale(0.2)
+        elif model == Constants.CHAR_PANDA:
+            self.model = Actor('models/panda-model',
+                                    {'run': 'models/panda-walk4',
+                                     'walk': 'models/panda-walk4'})
+            self.model.setScale(0.003)
+        elif model == Constants.CHAR_VEHICLE:
+            # TODO
+            pass
+
+        self.model.reparentTo(self.entity)
+
+        # start movement task
+        taskMgr.add(self.move, 'Character.move')
+
+    def move(self, task):
+        diffPos = self.target.getPos() - self.entity.getPos()
+        diffH = self.target.getH() - self.entity.getH()
+
+        if diffPos.getX() == diffPos.getY() == diffPos.getZ() == diffH == 0:
+            if self.isMoving:
+                self.model.stop()
+                self.model.pose('walk', 5)
+                self.isMoving = False
+        else:
+            if not self.isMoving:
+                self.model.loop('run')
+                self.isMoving = True
+
+            interval = LerpPosHprInterval(self.entity,
+                                          duration = 1.0 / self.tickRate,
+                                          pos = self.target.getPos(),
+                                          hpr = self.target.getHpr(),
+                                          name = 'Character[' + str(self.id) + '].move.interval')
+            interval.start()
+
+        return task.cont
+
+class Player(object):
+    """Handles player character motion from user input."""
+
+    def __init__(self, character):
+        self.character = character
+
         # class properties
         self.buttons = {
             'forward': KeyboardButton.ascii_key('w'),
@@ -86,25 +153,6 @@ class Player(object):
             'right': KeyboardButton.ascii_key('d'),
             'sprint': KeyboardButton.shift()
         }
-
-        self.isMoving = False
-
-        # set up model
-        if model == 'ralph':
-            self.model = Actor('models/ralph',
-                                    {'run': 'models/ralph-run',
-                                     'walk': 'models/ralph-walk'})
-            self.model.setScale(0.2)
-        elif model == 'panda':
-            self.model = Actor('models/panda-model',
-                                    {'run': 'models/panda-walk4',
-                                     'walk': 'models/panda-walk4'})
-            self.model.setScale(0.003)
-        elif model == 'car':
-            # TODO
-            pass
-
-        self.model.reparentTo(render)
 
         # start movement task
         taskMgr.add(self.move, 'Player.move')
@@ -117,25 +165,16 @@ class Player(object):
         turn = is_down(self.buttons['right']) - is_down(self.buttons['left'])
         sprint = is_down(self.buttons['sprint']) + 1
 
-        # move model as needed
-        if turn: self.model.setH(self.model, turn * -300 * globalClock.getDt())
-        if move: self.model.setY(self.model, move * sprint * -25 * globalClock.getDt())
-
-        # if moving, loop the run animation
-        if move or turn:
-            if self.isMoving is False:
-                self.model.loop('run')
-                self.isMoving = True
-        # otherwise, we're standing still, so if animation is running, stop it
-        elif self.isMoving:
-            self.model.stop()
-            self.model.pose('walk', 5)
-            self.isMoving = False
+        # move character as needed
+        dt = globalClock.getDt()
+        if turn: self.character.target.setH(self.character.target, turn * -300 * dt)
+        if move: self.character.target.setY(self.character.target, move * sprint * -8 * dt)
+        if turn or move: self.character.tickRate = 1000 / dt
 
         return task.cont
 
 class Sphere(object):
-    """A mostly static sphere that spins when a Player or NetworkPlayer is nearby."""
+    """A mostly static sphere that spins when a Character is nearby."""
 
     def __init__(self, type):
         self.model = loader.loadModel('models/planet_sphere')
@@ -199,10 +238,11 @@ class Game(object):
         base.accept('escape', sys.exit)
 
         # create character
-        self.character = Player('ralph')
+        self.character = Character(1, Constants.CHAR_RALPH)
+        self.player = Player(self.character)
 
         # create camera
-        self.camera = Camera(self.character.model)
+        self.camera = Camera(self.character.entity)
 
         # FIXME test spheres
         sun = Sphere('sun')
