@@ -40,13 +40,23 @@ class ConnectionManager:
 
             if self.connection:
                 self.cReader.addConnection(self.connection)
-
-                #taskMgr.add(self.updateRoutine, 'updateRoutine-Connection')
-                #taskMgr.doMethodLater(5, self.checkConnection, 'checkConnection')
-
                 return True
 
         return False
+
+    def initTasks(self):
+        """Initialize tasks to check on connection and send heartbeat.
+
+        This must be done here because in `Main` we do not initialize Panda3D
+        until after a connection is started. Thus, `taskMgr` is not defined
+        when `startConnection()` is called. We rely on the callee to also run
+        `initTasks()` after a successful connection is created.
+
+        """
+        if self.connection != None:
+            taskMgr.add(self.updateRoutine, 'updateRoutine-Connection')
+            taskMgr.doMethodLater(5, self.checkConnection, 'checkConnection')
+            taskMgr.doMethodLater(1.0 / Constants.TICKRATE, self.sendHeartbeat, 'sendHeartbeat')
 
     def closeConnection(self):
         """Close the current connection with the remote host.
@@ -118,3 +128,8 @@ class ConnectionManager:
                     self.handleResponse(responseCode, data)
 
         return task.cont
+
+    def sendHeartbeat(self, task):
+        if self.connection != None:
+            self.sendRequest(Constants.C_HEARTBEAT)
+        return task.again
