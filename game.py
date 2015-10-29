@@ -431,7 +431,8 @@ class Game(object):
         addInstructions(0.80, '[W,A,S,D]: Move character')
         addInstructions(0.75, '[T]: Open chat box')
         addInstructions(0.70, '[Y]: Open whisper box')
-        addInstructions(0.65, '[Tab]: Show players')
+        addInstructions(0.65, '[Up,Down]: Select whisper target')
+        addInstructions(0.60, '[Tab]: Show players')
 
         # create environment
         environ = loader.loadModel('models/square')      
