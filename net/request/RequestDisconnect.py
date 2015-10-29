@@ -5,7 +5,7 @@ from common.Constants import Constants
 from net.request.ServerRequest import ServerRequest
 
 class RequestDisconnect(ServerRequest):
-    def send(self):
+    def send(self, args):
         try:
             pkg = PyDatagram()
             pkg.addUint16(Constants.C_DISCONNECT)

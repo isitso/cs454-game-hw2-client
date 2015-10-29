@@ -1,4 +1,4 @@
-import sys, math
+import math
 
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
@@ -378,23 +378,31 @@ class Chat(object):
 
     def sendChat(self):
         if self.game.isChatting:
-            # disable chat entry
-            self.game.isChatting = False
-            self.game.camera.hideMouse()
-            self.entry['focus'] = 0
-
-            # handle text box
             message = self.entry.get().strip()
-            self.entry.enterText('')
 
             # figure out target
-            target = None
+            target = ''
             if self.whisperTarget in self.game.characters:
                 target = self.game.characters[self.whisperTarget].name
 
             # submit message
             self.game.main.cManager.sendRequest(Constants.C_CHAT, {'message': message, 'target': target})
             self.addLine(message) # DEBUG
+
+            # stop chatting
+            self.stopChatting()
+
+    def stopChatting(self):
+        if self.game.isChatting:
+            self.game.isChatting = False
+
+            # disable chat entry
+            self.game.isChatting = False
+            self.game.camera.hideMouse()
+            self.entry['focus'] = 0
+
+            # clear text box
+            self.entry.enterText('')
 
             # remove whisper target
             self.whisperTarget = None
@@ -444,7 +452,8 @@ class Game(object):
         render.setLight(render.attachNewNode(directionalLight))
 
         # accept special keys
-        base.accept('escape', sys.exit)
+        base.accept('escape', self.exit)
+        base.accept('shift-escape', self.exit)
 
         # create spheres
         sun = Sphere(self, 'sun')
@@ -470,3 +479,9 @@ class Game(object):
         #self.camera = Camera(self, self.character.entity)
         #self.characters[2] = Character(2, 'Panda', Constants.CHAR_PANDA)
         #self.characters[3] = Character(3, 'Car', Constants.CHAR_VEHICLE)
+
+    def exit(self):
+        if self.isChatting:
+            self.chat.stopChatting()
+        else:
+            self.main.cManager.sendRequest(Constants.C_DISCONNECT)
