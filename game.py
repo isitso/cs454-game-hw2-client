@@ -336,18 +336,23 @@ class Chat(object):
     def startChatting(self):
         if not self.game.isChatting:
             self.game.isChatting = True
-            self.game.camera.showMouse()
+
+            # focus on the DirectEntry
             self.entry['focus'] = 1
+
+            # reset whisper target (just in case)
             self.whisperTarget = None
+
+            # enable UI mode
+            if self.game.camera is not None:
+                self.game.camera.showMouse()
 
     def startWhispering(self):
         if not self.game.isChatting:
-            self.startChatting()
-            targets = self.game.characters.keys()
-            if len(targets) == 0:
+            if not self.game.characters:
                 self.addLine('<<System>> Nobody to whisper!')
-                self.targetText.setText('')
             else:
+                self.startChatting()
                 self.changeTarget(0)
 
     def changeTarget(self, amt):
@@ -380,15 +385,14 @@ class Chat(object):
     def sendChat(self):
         if self.game.isChatting:
             message = self.entry.get().strip()
+            if len(message) > 0:
+                # figure out target
+                target = ''
+                if self.whisperTarget in self.game.characters:
+                    target = self.game.characters[self.whisperTarget].name
 
-            # figure out target
-            target = ''
-            if self.whisperTarget in self.game.characters:
-                target = self.game.characters[self.whisperTarget].name
-
-            # submit message
-            self.game.main.cManager.sendRequest(Constants.C_CHAT, {'message': message, 'target': target})
-            self.addLine(message) # DEBUG
+                # submit message
+                self.game.main.cManager.sendRequest(Constants.C_CHAT, {'message': message, 'target': target})
 
             # stop chatting
             self.stopChatting()
@@ -398,8 +402,6 @@ class Chat(object):
             self.game.isChatting = False
 
             # disable chat entry
-            self.game.isChatting = False
-            self.game.camera.hideMouse()
             self.entry['focus'] = 0
 
             # clear text box
@@ -408,6 +410,10 @@ class Chat(object):
             # remove whisper target
             self.whisperTarget = None
             self.targetText.setText('')
+
+            # disable UI mode
+            if self.game.camera is not None:
+                self.game.camera.hideMouse()
 
     def addLine(self, line):
         self.lines.append(line)
