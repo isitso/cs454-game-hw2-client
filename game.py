@@ -136,7 +136,7 @@ class Character(object):
             self.model = Actor('models/panda-model',
                                     {'run': 'models/panda-walk4',
                                      'walk': 'models/panda-walk4'})
-            self.model.setScale(0.003)
+            self.model.setScale(0.001)
         elif model == Constants.CHAR_VEHICLE:
             self.model = Actor('models/car', {})
             self.model.setScale(0.3)
