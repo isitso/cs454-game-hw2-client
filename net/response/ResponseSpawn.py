@@ -27,7 +27,7 @@ class ResponseSpawn(ServerResponse):
                 if type == 2: # main player
                     game.character = character
                     game.player = Player(game, character)
-                    game.camera = Camera(character.entity)
+                    game.camera = Camera(self.main.game, character.entity)
                 elif type == 0: # other player
                     game.characters[id] = character
                     game.chat.addLine('<<Server>> ' + str(name) + ' logged in.')
