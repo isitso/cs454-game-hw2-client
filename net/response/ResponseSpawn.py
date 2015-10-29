@@ -24,6 +24,7 @@ class ResponseSpawn(ServerResponse):
 
                 character = Character(char_id, name, char_type)
                 character.entity.setPosHpr(x, y, z, h, p, r)
+                character.target.setPosHpr(x, y, z, h, p, r)
                 if type == 2: # main player
                     game.character = character
                     game.player = Player(game, character)
