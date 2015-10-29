@@ -193,9 +193,11 @@ class Player(object):
             'right': KeyboardButton.ascii_key('d'),
             'sprint': KeyboardButton.shift()
         }
+        self.moved = False
 
         # start movement task
         taskMgr.add(self.move, 'Player.move')
+        taskMgr.doMethodLater(1.0 / Constants.TICKRATE, self.sendLoc, 'Player.sendLoc')
 
     def move(self, task):
         if self.game.isChatting: return task.cont
@@ -211,9 +213,26 @@ class Player(object):
         dt = globalClock.getDt()
         if turn: self.character.target.setH(self.character.target, turn * -300 * dt)
         if move: self.character.target.setY(self.character.target, move * sprint * -8 * dt)
-        if turn or move: self.character.tickRate = 1000 / dt
+
+        # update
+        if turn or move:
+            self.character.tickRate = 1000 / dt
+            self.moved = True
 
         return task.cont
+
+    def sendLoc(self, task):
+        if self.moved:
+            self.moved = False
+            self.game.main.cManager.sendRequest(Constants.C_MOVE,
+                { 'x': self.character.target.getX()
+                , 'y': self.character.target.getY()
+                , 'z': self.character.target.getZ()
+                , 'h': self.character.target.getH()
+                , 'p': self.character.target.getP()
+                , 'r': self.character.target.getR()
+                })
+        return task.again
 
 class Sphere(object):
     """A mostly static sphere that spins when a Character is nearby."""
