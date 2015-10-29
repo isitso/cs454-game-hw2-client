@@ -9,18 +9,18 @@ class ResponseChat(ServerResponse):
             if self.main.state == Constants.GAMESTATE_PLAYING:
                 type = data.getInt32()
 
-                if type == 0: # whisper
+                if type == 0: # global
+                    name = data.getString()
+                    message = data.getString()
+
+                    self.main.game.chat.addLine('[' + name + ']: ' + message)
+
+                elif type == 1: # whisper
                     sender_name = data.getString()
                     recipient_name = data.getString()
                     message = data.getString()
 
                     self.main.game.chat.addLine('[' + sender_name + ' -> ' + recipient_name + ']: ' + message)
-
-                elif type == 1: # global
-                    name = data.getString()
-                    message = data.getString()
-
-                    self.main.game.chat.addLine('[' + name + ']: ' + message)
 
                 elif type == 2: # whisper fail
                     self.main.game.chat.addLine('<<Server>> Whisper failed.')
