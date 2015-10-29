@@ -5,6 +5,7 @@ from panda3d.core import TextNode
 from panda3d.core import Point3, Vec3, Vec4
 from panda3d.core import CompassEffect, KeyboardButton, WindowProperties
 from direct.interval.LerpInterval import LerpPosInterval, LerpPosHprInterval
+from direct.gui.DirectGui import DirectFrame, DirectEntry, DirectButton
 from direct.gui.OnscreenText import OnscreenText
 from direct.actor.Actor import Actor
 
@@ -24,7 +25,9 @@ def addTitle(text):
 class Camera(object):
     """Uses mouse controls to orbit the camera around a parent."""
 
-    def __init__(self, parent):
+    def __init__(self, game, parent):
+        self.game = game
+
         # class properties for camera rotation
         self.heading = 0
         self.pitch = 0
@@ -40,11 +43,7 @@ class Camera(object):
 
         # constrain mouse
         base.disableMouse() # disable default mouse camera control
-
-        props = WindowProperties()
-        props.setCursorHidden(True)
-        props.setMouseMode(WindowProperties.M_relative)
-        base.win.requestProperties(props)
+        self.hideMouse()
 
         # set up floater
         self.floater = render.attachNewNode('floater')
@@ -67,7 +66,21 @@ class Camera(object):
         # start task
         taskMgr.add(self.mouseControl, 'Camera.mouseControl')
 
+    def hideMouse(self):
+        props = WindowProperties()
+        props.setCursorHidden(True)
+        props.setMouseMode(WindowProperties.M_relative)
+        base.win.requestProperties(props)
+
+    def showMouse(self):
+        props = WindowProperties()
+        props.setCursorHidden(False)
+        props.setMouseMode(WindowProperties.M_absolute)
+        base.win.requestProperties(props)
+
     def mouseControl(self, task):
+        if self.game.isChatting: return task.cont
+
         md = base.win.getPointer(0)
         x = md.getX()
         y = md.getY()
@@ -87,6 +100,8 @@ class Camera(object):
         return task.cont
 
     def zoom(self, amount):
+        if self.game.isChatting: return
+
         self.targetY = clampScalar(self.targetY + amount, -2, -15)
 
         if self.interval is not None: self.interval.pause()
@@ -100,14 +115,16 @@ class Camera(object):
 class Character(object):
     """Handles character models and animations."""
 
-    def __init__(self, id, model):
+    def __init__(self, id, name, model):
         # class properties
-        self.entity = render.attachNewNode('entity')
-        self.target = render.attachNewNode('target')
         self.id = id
+        self.name = name
 
         self.tickRate = Constants.TICKRATE
         self.isMoving = False
+
+        self.entity = render.attachNewNode('entity')
+        self.target = render.attachNewNode('target')
 
         # set up model
         if model == Constants.CHAR_RALPH:
@@ -128,7 +145,7 @@ class Character(object):
         self.model.reparentTo(self.entity)
 
         # start movement task
-        taskMgr.add(self.move, 'Character.move')
+        taskMgr.add(self.move, 'Character[' + str(id) + '].move')
 
     def move(self, task):
         diffPos = self.target.getPos() - self.entity.getPos()
@@ -153,10 +170,19 @@ class Character(object):
 
         return task.cont
 
+    def destroy(self):
+        self.entity.removeNode()
+        self.entity = None
+        self.model = None
+        self.target.removeNode()
+        self.target = None
+        taskMgr.remove('Character[' + str(self.id) + '].move')
+
 class Player(object):
     """Handles player character motion from user input."""
 
-    def __init__(self, character):
+    def __init__(self, game, character):
+        self.game = game
         self.character = character
 
         # class properties
@@ -172,6 +198,8 @@ class Player(object):
         taskMgr.add(self.move, 'Player.move')
 
     def move(self, task):
+        if self.game.isChatting: return task.cont
+
         # use polling to detect keypresses
         is_down = base.mouseWatcherNode.is_button_down
 
@@ -233,11 +261,136 @@ class Sphere(object):
         if character is None: return False
         return self.model.getPos(character.entity).lengthSquared() <= (self.maxDist * self.maxDist)
 
+class Chat(object):
+    """Handles all chat."""
+
+    def __init__(self, game):
+        self.game = game
+        self.lines = []
+        self.whisperTarget = None
+
+        props = base.win.getProperties()
+        ratio = float(props.getXSize()) / props.getYSize()
+
+        self.frame = DirectFrame(frameColor = (0, 0, 0, 0),
+                                 frameSize = (0, 1, 0, 1),
+                                 pos = (-ratio, 0, -1))
+
+        self.text = OnscreenText(text = '',
+                                 pos = (0.01, 0.45),
+                                 scale = 0.05,
+                                 fg = (1, 1, 1, 1),
+                                 bg = (0, 0, 0, 0.2),
+                                 parent = self.frame,
+                                 align = TextNode.ALeft,
+                                 mayChange = True)
+
+        self.entry = DirectEntry(parent = self.frame,
+                                 text = '',
+                                 scale = 0.05,
+                                 pos = (0.01, 0, 0.02),
+                                 initialText = '',
+                                 width = 26,
+                                 numLines = 1)
+
+        self.targetText = OnscreenText(text = '',
+                                       pos = (1.34, 0.025),
+                                       scale = 0.05,
+                                       fg = (1, 1, 1, 1),
+                                       bg = (0, 0, 0, 0.4),
+                                       parent = self.frame,
+                                       align = TextNode.ALeft,
+                                       mayChange = True)
+
+        base.accept('t', self.startChatting)
+        base.accept('shift-t', self.startChatting)
+        base.accept('y', self.startWhispering)
+        base.accept('shift-y', self.startWhispering)
+        base.accept('arrow_up', lambda: self.changeTarget(1))
+        base.accept('shift-arrow_up', lambda: self.changeTarget(1))
+        base.accept('arrow_down', lambda: self.changeTarget(-1))
+        base.accept('shift-arrow_down', lambda: self.changeTarget(-1))
+        base.accept('enter', self.sendChat)
+        base.accept('shift-enter', self.sendChat)
+
+    def startChatting(self):
+        if not self.game.isChatting:
+            self.game.isChatting = True
+            self.game.camera.showMouse()
+            self.entry['focus'] = 1
+            self.whisperTarget = None
+
+    def startWhispering(self):
+        if not self.game.isChatting:
+            self.startChatting()
+            targets = self.game.characters.keys()
+            if len(targets) == 0:
+                self.addLine('<<System>> Nobody to whisper!')
+                self.targetText.setText('')
+            else:
+                self.changeTarget(0)
+
+    def changeTarget(self, amt):
+        if self.game.isChatting:
+            targets = self.game.characters.keys()
+            targets.sort()
+
+            # find target (or the closest id before target, or 0)
+            index = 0
+            match = False
+            for i in range(len(targets)):
+                if targets[i] < self.whisperTarget:
+                    index = i
+                elif targets[i] == self.whisperTarget:
+                    index = i
+                    match = True
+                    break
+                else:
+                    break
+
+            # if not found but going back 1 anyway, set amt to 0
+            if not match and amt == -1:
+                amt = 0
+
+            # set new whisper target
+            index = (index + amt) % len(targets)
+            self.whisperTarget = targets[index]
+            self.targetText.setText('to: ' + str(self.game.characters[self.whisperTarget].name))
+
+    def sendChat(self):
+        if self.game.isChatting:
+            # disable chat entry
+            self.game.isChatting = False
+            self.game.camera.hideMouse()
+            self.entry['focus'] = 0
+
+            # handle text box
+            message = self.entry.get().strip()
+            self.entry.enterText('')
+
+            # figure out target
+            target = None
+            if self.whisperTarget in self.game.characters:
+                target = self.game.characters[self.whisperTarget].name
+
+            # submit message
+            self.game.main.cManager.sendRequest(Constants.C_CHAT, {'message': message, 'target': target})
+            self.addLine(message) # DEBUG
+
+            # remove whisper target
+            self.whisperTarget = None
+            self.targetText.setText('')
+
+    def addLine(self, line):
+        self.lines.append(line)
+        self.text.setText('\n'.join(self.lines[-8:]))
+
 class Game(object):
     """Handles the entire game environment."""
 
     def __init__(self, main):
         self.main = main
+        self.isChatting = False
 
     def init(self):
         # window setup
@@ -290,7 +443,11 @@ class Game(object):
         self.camera = None
         self.characters = {}
 
+        self.chat = Chat(self)
+
         # DEBUG offline: create character and camera
-        #self.character = Character(1, Constants.CHAR_RALPH)
-        #self.player = Player(self.character)
-        #self.camera = Camera(self.character.entity)
+        #self.character = Character(1, 'Ralph', Constants.CHAR_RALPH)
+        #self.player = Player(self, self.character)
+        #self.camera = Camera(self, self.character.entity)
+        #self.characters[2] = Character(2, 'Panda', Constants.CHAR_PANDA)
+        #self.characters[3] = Character(3, 'Car', Constants.CHAR_VEHICLE)

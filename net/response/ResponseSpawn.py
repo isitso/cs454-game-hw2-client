@@ -22,15 +22,15 @@ class ResponseSpawn(ServerResponse):
                 p = data.getFloat32()
                 r = data.getFloat32()
 
-                character = Character(name, char_type)
+                character = Character(char_id, name, char_type)
                 character.entity.setPosHpr(x, y, z, h, p, r)
                 if type == 2: # main player
                     game.character = character
-                    game.player = Player(character)
+                    game.player = Player(game, character)
                     game.camera = Camera(character.entity)
                 elif type == 0: # other player
                     game.characters[id] = character
-                    # TODO announce
+                    game.chat.addLine('<<Server>> ' + str(name) + ' logged in.')
                 else: # unknown
                     self.log('[' + str(Constants.S_SPAWN) + '] ResponseSpawn - Unknown type ' + str(type))
 
