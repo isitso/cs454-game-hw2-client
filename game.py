@@ -202,28 +202,36 @@ class Player(object):
     def move(self, task):
         if self.game.isChatting: return task.cont
 
-        oldPos = self.character.target.getPos()
-
         # use polling to detect keypresses
+        dt = globalClock.getDt()
         is_down = base.mouseWatcherNode.is_button_down
 
         move = is_down(self.buttons['forward']) - is_down(self.buttons['backward'])
         turn = is_down(self.buttons['right']) - is_down(self.buttons['left'])
         sprint = is_down(self.buttons['sprint']) + 1
 
-        # move character as needed
-        dt = globalClock.getDt()
-        if turn: self.character.target.setH(self.character.target.getH() + turn * -300 * dt)
+        # update heading
+        if turn:
+            self.character.target.setH(self.character.target.getH() + turn * -300 * dt)
+
+        # update position
         if move:
-            vec = Vec3(0, move * sprint * -8 * dt, 0)
+            oldPos = self.character.target.getPos()
+            self.character.target.setY(self.character.target, move * sprint * -8 * dt)
+            targetPos = self.character.target.getPos()
 
-            # collision checking
-            self.character.target.setPos(self.character.target, vec)
+            for id in self.game.characters:
+                char = self.game.characters[id]
+                if 0.1 < self.character.target.getPos(char.target).lengthSquared() < 1:
+                    if (targetPos - oldPos).angleDeg(char.target.getPos() - oldPos) < 90:
+                        move = False
+                        self.character.target.setPos(oldPos)
+                        break
 
-        # update
-        if turn or move:
-            self.moved = True
+        # mark movement for sendLoc
+        if turn or move: self.moved = True
 
+        # continue
         return task.cont
 
     def sendLoc(self, task):
