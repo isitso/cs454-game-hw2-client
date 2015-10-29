@@ -29,7 +29,7 @@ class ResponseSpawn(ServerResponse):
                     game.player = Player(game, character)
                     game.camera = Camera(game, character.entity)
                 elif type == 0: # other player
-                    game.characters[id] = character
+                    game.characters[char_id] = character
                     game.chat.addLine('<<Server>> ' + str(name) + ' logged in.')
                     game.playerList.updateDisplay()
                 else: # unknown

@@ -19,7 +19,7 @@ class ResponseMove(ServerResponse):
                 if id in game.characters:
                     game.characters[id].target.setPosHpr(x, y, z, h, p, r)
                 else:
-                    self.log('[' + str(Constants.S_PLAYER_MOVE) + '] ResponseMove - Unknown character ' + id)
+                    self.log('[' + str(Constants.S_PLAYER_MOVE) + '] ResponseMove - Unknown character ' + str(id))
 
             self.log('Received [' + str(Constants.S_PLAYER_MOVE) + '] ResponseMove')
         except:
