@@ -121,7 +121,6 @@ class Character(object):
         self.name = name
         self.modelType = model
 
-        self.tickRate = Constants.TICKRATE
         self.isMoving = False
 
         self.entity = render.attachNewNode('entity')
@@ -146,13 +145,13 @@ class Character(object):
         self.model.reparentTo(self.entity)
 
         # start movement task
-        taskMgr.add(self.move, 'Character[' + str(id) + '].move')
+        taskMgr.doMethodLater(1.0 / Constants.TICKRATE, self.move, 'Character[' + str(id) + '].move')
 
     def move(self, task):
         diffPos = self.target.getPos() - self.entity.getPos()
-        diffH = self.target.getH() - self.entity.getH()
+        diffH = (self.target.getH() - self.entity.getH()) % 360
 
-        if diffPos.getX() == diffPos.getY() == diffPos.getZ() == diffH == 0:
+        if diffPos.lengthSquared() < 0.001 and -0.1 < diffH < 0.1:
             if self.isMoving:
                 self.model.stop()
                 self.model.pose('walk', 5)
@@ -163,13 +162,13 @@ class Character(object):
                 self.isMoving = True
 
             interval = LerpPosHprInterval(self.entity,
-                                          duration = 1.0 / self.tickRate,
+                                          duration = task.getDelay(),
                                           pos = self.target.getPos(),
                                           hpr = self.target.getHpr(),
                                           name = 'Character[' + str(self.id) + '].move.interval')
             interval.start()
 
-        return task.cont
+        return task.again
 
     def destroy(self):
         self.entity.removeNode()
@@ -203,6 +202,8 @@ class Player(object):
     def move(self, task):
         if self.game.isChatting: return task.cont
 
+        oldPos = self.character.target.getPos()
+
         # use polling to detect keypresses
         is_down = base.mouseWatcherNode.is_button_down
 
@@ -212,12 +213,15 @@ class Player(object):
 
         # move character as needed
         dt = globalClock.getDt()
-        if turn: self.character.target.setH(self.character.target, turn * -300 * dt)
-        if move: self.character.target.setY(self.character.target, move * sprint * -8 * dt)
+        if turn: self.character.target.setH(self.character.target.getH() + turn * -300 * dt)
+        if move:
+            vec = Vec3(0, move * sprint * -8 * dt, 0)
+
+            # collision checking
+            self.character.target.setPos(self.character.target, vec)
 
         # update
         if turn or move:
-            self.character.tickRate = 1000 / dt
             self.moved = True
 
         return task.cont
