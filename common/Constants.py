@@ -34,5 +34,6 @@ class Constants:
     GAMESTATE_PLAYING                   = 2
 
     CHAR_RALPH                          = 1
-    CHAR_VEHICLE                        = 2
-    CHAR_PANDA                          = 3
+    CHAR_PANDA                          = 2
+    CHAR_VEHICLE                        = 3
+    
