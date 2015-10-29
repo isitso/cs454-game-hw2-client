@@ -31,6 +31,7 @@ class ResponseSpawn(ServerResponse):
                 elif type == 0: # other player
                     game.characters[id] = character
                     game.chat.addLine('<<Server>> ' + str(name) + ' logged in.')
+                    game.playerList.updateDisplay()
                 else: # unknown
                     self.log('[' + str(Constants.S_SPAWN) + '] ResponseSpawn - Unknown type ' + str(type))
 

@@ -119,6 +119,7 @@ class Character(object):
         # class properties
         self.id = id
         self.name = name
+        self.modelType = model
 
         self.tickRate = Constants.TICKRATE
         self.isMoving = False
@@ -412,6 +413,54 @@ class Chat(object):
         self.lines.append(line)
         self.text.setText('\n'.join(self.lines[-8:]))
 
+class PlayerList(object):
+    """Handles the list of players and the associated UI."""
+
+    def __init__(self, game):
+        self.game = game
+        self.display = False
+
+        props = base.win.getProperties()
+        ratio = float(props.getXSize()) / props.getYSize()
+
+        self.frame = DirectFrame(frameColor = (0, 0, 0, 0),
+                                 frameSize = (-1, 0, -1, 0),
+                                 pos = (ratio, 0, 1))
+
+        self.text = OnscreenText(text = '',
+                                 pos = (-0.02, -0.05),
+                                 scale = 0.05,
+                                 fg = (1, 1, 1, 1),
+                                 parent = self.frame,
+                                 align = TextNode.ARight,
+                                 mayChange = True)
+
+        base.accept('tab', self.toggleDisplay)
+
+    def toggleDisplay(self):
+        if not self.game.isChatting:
+            self.display = not self.display
+            self.updateDisplay()
+
+    def updateDisplay(self):
+        if self.display:
+            list = 'Current Players:'
+            if self.game.character is not None:
+                list += '\n' + self.describe(self.game.character)
+            for id in self.game.characters:
+                list += '\n' + self.describe(self.game.characters[id])
+            self.text.setText(list)
+            self.display = True
+        else:
+            self.text.setText('')
+
+    def describe(self, character):
+        desc = character.name + ' ('
+        if character.modelType == Constants.CHAR_RALPH: desc += 'Ralph'
+        if character.modelType == Constants.CHAR_PANDA: desc += 'Panda'
+        if character.modelType == Constants.CHAR_VEHICLE: desc += 'Car'
+        return desc + ')'
+
 class Game(object):
     """Handles the entire game environment."""
 
@@ -473,6 +522,7 @@ class Game(object):
         self.characters = {}
 
         self.chat = Chat(self)
+        self.playerList = PlayerList(self)
 
         # DEBUG offline: create character and camera
         #self.character = Character(1, 'Ralph', Constants.CHAR_RALPH)

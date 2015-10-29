@@ -16,6 +16,7 @@ class ResponsePlayerLogout(ServerResponse):
                 char.destroy()
                 del game.characters[id]
                 game.chat.addLine('<<Server>> ' + str(name) + ' logged out.')
+                game.playerList.updateDisplay()
             else:
                 self.log('[' + str(Constants.S_PLAYER_LOGOUT) + '] ResponsePlayerLogout - Unknown character ' + str(id))
 
